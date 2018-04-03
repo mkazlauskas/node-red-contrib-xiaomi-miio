@@ -24,57 +24,29 @@ devices.on('available', reg => {
 		console.log(reg.id, 'could not be connected to');
 		return;
 	}
-	
-	console.log('Detected device with identifier ', reg.id, ' type ', device.type, ' model ', device.model);
+	const id = device.id;
+	const model = device.miioModel;
+	console.log(`Detected device with '${model}' identifier '${id}'`);
+	if (device.matches('type:miio:gateway')) {
+		handleGateway(id, device);
+	}
+	if (device.matches('cap:actions')) {
+		handleController(id, device);
+	}
 	
 	if (typeof allDevices[reg.id] === 'undefined') {
-    	optionDevices.push({
-    		id: reg.id,
-    		type: device.type,
-    		model: device.model
-    	});
-    	
-    	allDevices[reg.id] = device;
-    	
-        switch (device.type) {
-            case 'gateway':
-                handleGateway(reg.id, device);
-                break;
-    
-            case 'air-purifier':
-                handleAirPurifier(reg.id, device);
-                break;
-    
-            case 'controller':
-            	//console.log('sub-device!' + util.inspect(device, { showHidden: true, depth: 5 }) );
-                handleController(reg.id, device);
-                break;
-    
-            case 'magnet':
-                handleMagnet(reg.id, device);
-                break;
-    
-            case 'sensor':
-                handleSensor(reg.id, device);
-                break;
-    
-            case 'motion':
-                handleMotion(reg.id, device);
-                break;
-    
-            default:
-                console.log('Skip device: ' + reg.id + ' type:' + device.type);
-        }
+		optionDevices.push({id, model});
+		allDevices[reg.id] = device;
 	} else {
-	    console.log('Device already initialized.');
+		console.log('Device already initialized.');
 	}
 
 });
 
 /* ======================================================================================================= */
 function triggerCallback(id, deviceCallbacks, event, device) {
-	// console.log('event', ' ', id, ' ', arg1, ' ', arg2, ' ', arg3);
 	var callbacks = deviceCallbacks[id];
+	// console.log('triggerCallback', id, callbacks.length, event, device);
 	
 	if (callbacks) {
 		for (var i = 0, len = callbacks.length; i < len; i++) {
@@ -108,13 +80,13 @@ function handleGateway(id, device) {
 function handleController(id, device) {
 
     device.on('propertyChanged', e => {
-        console.log('Controller ', 'propertyChanged', e);
+        console.log('Controller', id, 'propertyChanged', e);
         triggerCallback(id, propertyCallbacks, e, device);
     });
 
     device.on('action', e => {
-        console.log('Controller ', 'action', e);
-		triggerCallback(id, actionCallbacks, e, device);
+        console.log('Controller', id, 'action', e);
+	triggerCallback(id, actionCallbacks, e, device);
     });
 
 }

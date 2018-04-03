@@ -4,11 +4,20 @@
     "license": "MIT",
     "description": "miIO device library for node red",
     "repository": "aformusatii/node-red-contrib-xiaomi-miio",
-    "maintainers": [{
-        "name": "aformusatii",
-        "email": "aformusatii@gmail.com"
-    }],
-    "keywords": ["node-red", "miio", "mi", "mijia", "aqara", "xiaomi"],
+    "maintainers": [
+        {
+            "name": "aformusatii",
+            "email": "aformusatii@gmail.com"
+        }
+    ],
+    "keywords": [
+        "node-red",
+        "miio",
+        "mi",
+        "mijia",
+        "aqara",
+        "xiaomi"
+    ],
     "node-red": {
         "nodes": {
             "switch": "switch/switch.js",
