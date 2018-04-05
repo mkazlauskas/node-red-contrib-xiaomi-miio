@@ -33,10 +33,13 @@ devices.on('available', reg => {
 	if (device.matches('cap:actions')) {
 		handleController(id, device);
 	}
+	if (device.matches('cap:motion')) {
+		handleMotion(id, device);
+	}
 	
-	if (typeof allDevices[reg.id] === 'undefined') {
+	if (typeof allDevices[id] === 'undefined') {
 		optionDevices.push({id, model});
-		allDevices[reg.id] = device;
+		allDevices[id] = device;
 	} else {
 		console.log('Device already initialized.');
 	}
@@ -132,17 +135,27 @@ function handleAirPurifier(id, device) {
 
 /* ======================================================================================================= */
 function handleMotion(id, device) {
+	console.log('handleMotion', id, device);
 
     device.on('propertyChanged', e => {
+	    console.log('motion propertyChanged', e);
 		triggerCallback(id, propertyCallbacks, e, device);
     });
 
     device.on('action', e => {
+	    console.log('motion action', e);
 		triggerCallback(id, actionCallbacks, e, device);
     });
 
-    device.on('motion', e => {
-		triggerCallback(id, motionCallbacks, e, device);
+    // device.on('motion', e => {
+// 	    console.log('motion motion', e);
+// 		triggerCallback(id, motionCallbacks, e, device);
+  //   });
+    
+    device.on('stateChanged', e => {
+	if (e.key === 'motion') {
+		triggerCallback(id, motionCallbacks, {motion: e.value}, device);
+	}
     });
 
 }

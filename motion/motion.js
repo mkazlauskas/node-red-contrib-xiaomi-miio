@@ -13,15 +13,13 @@ module.exports = function(RED) {
         // hook device events
         var deviceId = config.deviceId;
         if (deviceId) {
-
-            miio.registerMotionListener(deviceId, function() {
+            miio.registerMotionListener(deviceId, function({motion}) {
+		console.log('motion!', deviceId, motion);
                 // Check if current instance is still enabled, this avoid running old callback when the node is re-loaded
                 if (_node._enabled) {
     
                     var msg = {
-                        payload: {
-                            action: 'motion'
-                        }
+                        payload: {motion},
                     };
     
                     _node.send(msg);
